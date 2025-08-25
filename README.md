@@ -25,6 +25,109 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+---
+
+## Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (v18+ recommended)
+- [Docker](https://www.docker.com/get-started)
+
+---
+
+## Running the Project
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/thetreeorg/tree-auth-backend.git
+cd tree-auth-backend
+```
+
+### 2. Start PostgreSQL with Docker
+
+This project uses PostgreSQL as its database. You can start a local instance using Docker Compose:
+
+```bash
+docker-compose up -d
+```
+
+This will start a PostgreSQL server on port 5432 with default credentials:
+
+- **Database:** treeauth
+- **User:** postgres
+- **Password:** postgres
+
+### 3. Configure Environment Variables
+
+Create a `.env` file in the root directory with the following content:
+
+```env
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/treeauth"
+```
+
+You can adjust the values as needed.
+
+### 4. Install dependencies
+
+```bash
+npm install
+```
+
+### 5. Generate Prisma Client & Run Migrations
+
+```bash
+npx prisma generate
+npx prisma migrate dev
+```
+
+### 6. Start the Application
+
+```bash
+# development
+npm run start
+
+# watch mode
+npm run start:dev
+
+# production mode
+npm run build
+npm run start:prod
+```
+
+---
+
+## Running Tests
+
+```bash
+# unit tests
+npm run test
+
+# e2e tests
+npm run test:e2e
+
+# test coverage
+npm run test:cov
+```
+
+---
+
+## Useful Commands
+
+- **Stop Docker containers:**
+  ```bash
+  docker-compose down
+  ```
+- **View database in Prisma Studio:**
+  ```bash
+  npx prisma studio
+  ```
+
+---
+
+## Deployment
+
 ## Project setup
 
 ```bash
