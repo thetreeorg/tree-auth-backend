@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { MailService } from '../mail.service';
 import {
   PrismaClient,
   VerificationCode,
@@ -8,7 +9,8 @@ import * as crypto from 'crypto';
 
 @Injectable()
 export class AuthService {
-  // ...existing code...
+  private prisma = new PrismaClient();
+  constructor(private readonly mailService: MailService) {}
 
   async createAccount(
     otpId: string,
@@ -44,7 +46,7 @@ export class AuthService {
     await this.prisma.verificationCode.delete({ where: { id: otpId } });
     return session;
   }
-  private prisma = new PrismaClient();
+  // removed duplicate prisma property
 
   async requestAuthorization(
     email: string,
@@ -84,8 +86,13 @@ export class AuthService {
         userApplicationId: userApp?.id,
       },
     });
-    // 4. Send email (implement separately)
-    // await sendEmail(email, code);
+    // Send OTP email
+    await this.mailService.sendMail(
+      email,
+      'Your OTP Code',
+      `Your OTP code is: ${code}`,
+      `<p>Your OTP code is: <b>${code}</b></p>`,
+    );
     return verificationCode;
   }
 
