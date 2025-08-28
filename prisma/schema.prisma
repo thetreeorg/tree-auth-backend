@@ -26,10 +26,9 @@ enum UserRole {
   }
 
   model Application {
-    id           String   @id @default(uuid())
-    name         String   @unique
-    apiSecret    String   @unique
-    userApplications UserApplication[]
+  id           String   @id @default(uuid())
+  name         String   @unique
+  userApplications UserApplication[]
   }
 
   model UserApplication {
