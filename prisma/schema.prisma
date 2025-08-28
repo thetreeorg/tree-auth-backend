@@ -43,12 +43,13 @@ enum UserRole {
   }
 
   model VerificationCode {
-    id         String   @id @default(uuid())
-    code       String
-    expiresAt  DateTime
-    meta       Json?
-    userApplication UserApplication @relation(fields: [userApplicationId], references: [id])
-    userApplicationId String
+  id         String   @id @default(uuid())
+  code       String
+  expiresAt  DateTime
+  meta       Json?
+  attempts   Int      @default(0)
+  userApplication UserApplication @relation(fields: [userApplicationId], references: [id])
+  userApplicationId String
   }
 
   model Session {
