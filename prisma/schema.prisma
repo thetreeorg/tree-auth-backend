@@ -56,6 +56,6 @@ enum UserRole {
     id         String   @id @default(uuid())
     accessToken String  @unique
     expiresAt  DateTime
-    userApplication UserApplication @relation(fields: [userApplicationId], references: [id])
-    userApplicationId String
+  userApplication   UserApplication? @relation(fields: [userApplicationId], references: [id])
+  userApplicationId String?
   }
