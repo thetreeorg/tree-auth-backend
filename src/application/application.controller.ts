@@ -2,11 +2,13 @@ import {
   Controller,
   Post,
   Get,
+  Param,
   Body,
   Headers,
   ForbiddenException,
+  NotFoundException,
 } from '@nestjs/common';
-import { ApiTags, ApiResponse, ApiHeader } from '@nestjs/swagger';
+import { ApiTags, ApiResponse, ApiHeader, ApiParam } from '@nestjs/swagger';
 import { PrismaClient } from '../../generated/prisma/client';
 
 const prisma = new PrismaClient();
@@ -59,5 +61,40 @@ export class ApplicationController {
     return prisma.application.findMany({
       select: { id: true, name: true },
     });
+  }
+  @Get(':name')
+  @ApiHeader({
+    name: 'x-api-secret',
+    required: true,
+    description: 'Master API secret',
+  })
+  @ApiParam({ name: 'name', required: true, description: 'Application name' })
+  @ApiResponse({
+    status: 200,
+    description: 'Application ID for given name',
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string' },
+        name: { type: 'string' },
+      },
+    },
+  })
+  async getApplicationId(
+    @Param('name') name: string,
+    @Headers('x-api-secret') apiSecret: string,
+  ) {
+    const masterSecret = process.env.MASTER_API_SECRET;
+    if (!apiSecret || apiSecret !== masterSecret) {
+      throw new ForbiddenException('Invalid API secret');
+    }
+    const app = await prisma.application.findUnique({
+      where: { name },
+      select: { id: true, name: true },
+    });
+    if (!app) {
+      throw new NotFoundException('Application not found');
+    }
+    return app;
   }
 }
