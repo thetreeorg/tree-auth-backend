@@ -127,22 +127,12 @@ export class AuthService {
       await this.prisma.verificationCode.delete({ where: { id: otpId } });
       // 5. Check user
       const meta = verificationCode.meta as { email: string };
-      const user = await this.prisma.user.findUnique({
+      let user = await this.prisma.user.findUnique({
         where: { email: meta.email },
       });
       if (!user) {
-        // Create new verification for account creation
-        const newVerification = await this.prisma.verificationCode.create({
-          data: {
-            code: this.generateOtp(),
-            expiresAt: new Date(
-              Date.now() + Number(process.env.OTP_EXPIRE_MINUTES) * 60000,
-            ),
-            meta,
-            userApplicationId: verificationCode.userApplicationId,
-          },
-        });
-        return newVerification;
+        // Automatically create user with meta
+        user = await this.prisma.user.create({ data: meta });
       }
       // Create session
       const session = await this.createSession(
