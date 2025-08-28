@@ -7,6 +7,10 @@ WORKDIR /app
 # Copy package files and install dependencies
 COPY package*.json ./
 RUN npm install --production
+    
+# Generate Prisma Client
+COPY prisma-generate.js ./
+RUN node prisma-generate.js
 
 # Copy source code
 COPY . .
