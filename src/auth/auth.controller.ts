@@ -1,11 +1,34 @@
 import { Controller, Post, Body, BadRequestException } from '@nestjs/common';
+import { ApiTags, ApiBody, ApiResponse } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   // ...existing endpoints...
 
   @Post('create-account')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        otpId: { type: 'string' },
+        attrs: { type: 'object', additionalProperties: true },
+      },
+      required: ['otpId', 'attrs'],
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Account created',
+    schema: {
+      type: 'object',
+      properties: {
+        accessToken: { type: 'string' },
+        expiresAt: { type: 'string', format: 'date-time' },
+      },
+    },
+  })
   async createAccount(
     @Body('otpId') otpId: string,
     @Body('attrs') attrs: Record<string, any>,
@@ -27,6 +50,28 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('request-otp')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        email: { type: 'string' },
+        applicationId: { type: 'string' },
+      },
+      required: ['email', 'applicationId'],
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'OTP requested',
+    schema: {
+      type: 'object',
+      properties: {
+        id: { type: 'string' },
+        expiresAt: { type: 'string', format: 'date-time' },
+        maxAttempts: { type: 'string' },
+      },
+    },
+  })
   async requestOtp(
     @Body('email') email: string,
     @Body('applicationId') applicationId: string,
@@ -46,6 +91,28 @@ export class AuthController {
   }
 
   @Post('verify-otp')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        otpId: { type: 'string' },
+        otpCode: { type: 'string' },
+      },
+      required: ['otpId', 'otpCode'],
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'OTP verified',
+    schema: {
+      type: 'object',
+      properties: {
+        accessToken: { type: 'string' },
+        expiresAt: { type: 'string', format: 'date-time' },
+        token: { type: 'string' },
+      },
+    },
+  })
   async verifyOtp(
     @Body('otpId') otpId: string,
     @Body('otpCode') otpCode: string,
